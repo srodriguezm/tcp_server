@@ -1,0 +1,18 @@
+extends layout
+
+block content
+	h1= title
+	p= subtitle
+	h3= ruleTit
+	p= rules1
+	p= rules2
+	p= rules3
+	br
+	h3= lista
+	#caja
+		p#sala
+		#messages
+		#form
+			form(onsubmit='return addMessage(this)')
+				input#texto(type='text', placeholder='Participante')
+				input#but(type='submit', value='Ofertar')
