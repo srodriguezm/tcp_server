@@ -1,5 +1,6 @@
 var socket = io.connect('http://localhost:3000',{'forceNew':true});
 
+var stat = 'login';
 var id ='';
 var user='';
 var sala='';
@@ -74,15 +75,20 @@ function render(data){
     document.getElementById('messages').innerHTML=html;
 }
 
+//Funcion de autenticación de usuario
 function addMessage(e){
     console.log(document.getElementById('texto').value);
     document.getElementById('but').disabled = true;
-    var message ={
-        author: document.getElementById('texto').value,
-        text : "Oferta"
+    var data ={
+        user: document.getElementById('texto').value,
+        password : document.getElementById('pass').value
     };
     console.log('emitting new message');
-    socket.emit('new-message', message);
-    setTimeout(function(){ document.getElementById('but').disabled = false; }, 30000);
+  
+    socket.emit('user.login', data);
     return false;
+}
+
+function changeType(e){
+
 }

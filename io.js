@@ -32,6 +32,7 @@ function startConnection(server){
     //login
     socket.on('user.login', function(data){
       authenticateUser(socket, data);
+      
     });
 
     //Logout
