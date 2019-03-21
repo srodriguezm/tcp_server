@@ -1,16 +1,5 @@
 var socket = io.connect('http://localhost:3000',{'forceNew':true});
 
-var id ='';
-var user='';
-var sala='';
-socket.on('errorrr',(data)=>{
-    alert(data);
-});
-socket.on('messages', function(data){
-  console.log(data);
-  render(data, document.getElementById('sala').innerText);
-});
-
 function getProfileTemplate(profile){
   var html = profile.map((elem, index)=>{
     return(`<div>
@@ -62,6 +51,90 @@ function getCreateAccountTemplate(){
           </form>`);
   }).join(' ');
 }
+
+function createAccountController(){
+  document.getElementById('create-account-form')
+  .addEventListener('submit',function(e){
+    e.preventDefault();
+    var user={
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+      firstname: document.getElementById('firstname').value,
+      lastname:document.getElementById('lastname').value
+    };
+    socket.emit('user.create', user);
+  });
+}
+
+function getLoginTemplate(){
+  var html = profile.map((elem, index)=>{
+    return(`<form id="login-form">
+              <h1>Login</h1>
+              <div class="form-group">
+                <label>Email</label>
+                <input id="email" type="email" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <label>Contraseña</label>
+                <input id="password" type="password" class="form-control"/>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary">Login</button>
+                &nbsp; or &nbsp;
+                <a href="#/create-account" class="btn btn-default">Crear Cuenta</a>
+              </div>
+              <div id="messages"></div>
+          </form>`);
+  }).join(' ');
+}
+
+function loginController(){
+  document.getElementById('login-form')
+    .addEventListener('submit', function(e){
+      e.preventDefault();
+
+      var user={
+        email: document.getElementById('email').value,
+        password:document.getElementById('password').value
+      };
+      socket.emit('user.login', user);
+    });
+}
+
+function renderTemplate(tpl){
+  document.getElemtById('main-container').innerHTML=tpl;
+}
+
+function userLoggedIn(date){
+    localStorage.token=data.token;
+    renderTemplate(getProfileTemplate(data.profile));
+    profileController(data);
+}
+
+function getRoute(){
+  if(document.location.hash ==='#/create-account'){
+    renderTemplate(getCreateAccountTemplate());
+    createAccountController();
+    return;
+  }
+  renderTemplate(getLoginTemplate());
+  loginController();
+}
+
+function showError(data){
+  alert(data.message);
+}
+
+(function(){
+  socket.on('user.create.error',showError());
+  socket.on('user.get.success',userLoggedIn());
+  socket.on('user.login.error',showError());
+  window.addEventListener('hashchange', getRoute);
+  getRoute();
+  if(localStorage.token){
+    socket.emit('user.get', localStorage.token);
+  }
+}());
 
 function render(data){
     var html = data.map((elem,index)=>{
